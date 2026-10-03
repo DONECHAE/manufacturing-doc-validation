@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>자동차 부품 기술자료 검증 체크리스트</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">실증용 부품 기술자료 검증</p>
+      <h1>검증 체크리스트</h1>
+    </div>
+    <div class="header-actions">
+      <select id="themeSelect" class="theme-select" aria-label="화면 모드">
+        <option value="light">라이트 모드</option>
+        <option value="dark">다크 모드</option>
+        <option value="system">시스템 설정</option>
+      </select>
+      <button id="importStateBtn" class="secondary">상태 불러오기</button>
+      <button id="exportStateBtn" class="secondary">상태 JSON 저장</button>
+      <button id="exportCsvBtn" class="primary">검증 CSV 저장</button>
+      <button id="exportDocumentsBtn" class="primary">documents.csv 저장</button>
+      <input id="stateFileInput" type="file" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <section class="panel">
+        <h2>작업 배정</h2>
+        <label>작업자
+          <input id="reviewerInput" type="text" placeholder="예: 홍길동">
+        </label>
+        <div class="grid2">
+          <label>시작 행
+            <input id="startRowInput" type="number" min="2" value="2">
+          </label>
+          <label>검증 행 수
+            <input id="batchSizeInput" type="number" min="1" value="100">
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="applyBatchBtn" class="primary">범위 적용</button>
+          <button id="nextPendingBtn" class="secondary">다음 미검토</button>
+        </div>
+        <p class="hint">행 번호는 원본 XLSX의 실제 행 번호입니다. 3명 이상으로 늘어나면 시작 행과 행 수만 다르게 지정하면 됩니다.</p>
+      </section>
+
+      <section class="panel stats-panel">
+        <h2>진행 현황</h2>
+        <div id="stats" class="stats"></div>
+      </section>
+
+      <section class="panel">
+        <h2>목록</h2>
+        <div class="filter-row">
+          <select id="statusFilter">
+            <option value="all">전체</option>
+            <option value="pending">미검토</option>
+            <option value="pass">통과</option>
+            <option value="hold">보류</option>
+            <option value="fail">탈락</option>
+          </select>
+          <input id="searchInput" type="search" placeholder="제목·부품·URL 검색">
+        </div>
+        <div id="candidateList" class="candidate-list"></div>
+      </section>
+    </aside>
+
+    <section class="workspace">
+      <section class="record-toolbar">
+        <button id="prevBtn" class="secondary">이전</button>
+        <div id="recordPosition" class="record-position"></div>
+        <button id="nextBtn" class="secondary">다음</button>
+      </section>
+
+      <section class="document-view">
+        <article class="source-panel">
+          <div class="source-heading">
+            <div>
+              <p id="candidateMeta" class="eyebrow"></p>
+              <h2 id="title"></h2>
+            </div>
+            <a id="openUrl" class="open-link" target="_blank" rel="noreferrer">원문 열기</a>
+          </div>
+          <dl class="meta-grid" id="metaGrid"></dl>
+          <div class="reason-box">
+            <h3>수집 사유</h3>
+            <p id="reason"></p>
+          </div>
+          <div class="preview-box">
+            <div class="preview-head">
+              <h3>원문 미리보기</h3>
+              <button id="reloadPreviewBtn" class="secondary small">새로고침</button>
+            </div>
+            <iframe id="previewFrame" title="원문 미리보기"></iframe>
+            <p class="hint">사이트 보안 정책 때문에 미리보기가 막히면 오른쪽 위의 원문 열기로 확인하세요.</p>
+          </div>
+        </article>
+
+        <article class="review-panel">
+          <h2>검증 체크리스트</h2>
+          <div class="status-strip" id="statusStrip">미검토</div>
+
+          <fieldset>
+            <legend>필수 통과 조건</legend>
+            <label class="check"><input type="checkbox" data-field="language_verified"> 한국어 본문이다</label>
+            <label class="check"><input type="checkbox" data-field="part_relevance_verified"> 대상 부품 또는 부품 공정·소재와 직접 관련 있다</label>
+            <label class="check"><input type="checkbox" data-field="topic_relevance_verified"> 공정·소재·불량·검사·설비·안전·표준 중 하나에 해당한다</label>
+            <label class="check"><input type="checkbox" data-field="access_verified"> 무료 원문 또는 본문을 확인했다</label>
+            <label class="check"><input type="checkbox" data-field="source_verified"> 제목·기관/저자·URL·발행일/연도를 확인했다</label>
+            <label class="check"><input type="checkbox" data-field="not_duplicate_verified"> 중복 문서가 아니다</label>
+          </fieldset>
+
+          <section id="typeGuidance" class="type-guidance"></section>
+
+          <fieldset>
+            <legend>최종 메타데이터</legend>
+            <label>최종 doc_id
+              <input data-field="final_doc_id" type="text" placeholder="예: PHA-0012">
+            </label>
+            <label>부품군
+              <select data-field="company">
+                <option>PHA</option>
+                <option>상신브레이크</option>
+                <option>SL</option>
+                <option>공통</option>
+              </select>
+            </label>
+            <label>부품
+              <input data-field="part" type="text">
+            </label>
+            <label>기술주제
+              <input data-field="topic" type="text">
+            </label>
+            <label>문서유형
+              <select data-field="source_type">
+                <option>논문</option>
+                <option>특허</option>
+                <option>연구보고서</option>
+                <option>기술보고서</option>
+                <option>표준</option>
+                <option>가이드</option>
+                <option>제조사 기술자료</option>
+                <option>제조사자료</option>
+                <option>데이터셋</option>
+              </select>
+            </label>
+            <label>발행기관/저널
+              <input data-field="publisher" type="text">
+            </label>
+            <label>저자
+              <input data-field="author" type="text">
+            </label>
+            <label>발행일
+              <input data-field="published_date" type="text" placeholder="YYYY-MM-DD 또는 YYYY">
+            </label>
+            <label>연도 예외 사유
+              <input data-field="year_exception_reason" type="text" placeholder="2016년 이전 자료일 때만">
+            </label>
+            <label>텍스트 추출 상태
+              <select data-field="text_extract_status">
+                <option>미확인</option>
+                <option>가능</option>
+                <option>OCR 필요</option>
+                <option>불가</option>
+              </select>
+            </label>
+            <label>예상 청크 수
+              <input data-field="chunk_count" type="number" min="0" placeholder="나중에 자동/수동 입력">
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>판정 기록</legend>
+            <label>보류 사유
+              <input data-field="hold_reason" type="text">
+            </label>
+            <label>탈락 사유
+              <input data-field="fail_reason" type="text">
+            </label>
+            <label>검증 메모
+              <textarea data-field="notes" rows="4" placeholder="본문에서 확인한 근거, 수정사항, 다음 작업"></textarea>
+            </label>
+          </fieldset>
+
+          <div class="decision-row">
+            <button id="passBtn" class="pass">통과</button>
+            <button id="holdBtn" class="hold">보류</button>
+            <button id="failBtn" class="fail">탈락</button>
+            <button id="saveBtn" class="secondary">저장</button>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script src="candidates.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

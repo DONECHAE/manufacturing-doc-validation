@@ -1,0 +1,18 @@
+{
+  "total_candidates": 300,
+  "company_counts": {
+    "PHA": 106,
+    "상신브레이크": 90,
+    "SL": 90,
+    "공통": 14
+  },
+  "output_files": [
+    "index.html",
+    "styles.css",
+    "app.js",
+    "candidates.js",
+    "candidates.json",
+    "candidates.csv",
+    "README.md"
+  ]
+}
