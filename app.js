@@ -11,7 +11,7 @@ const state = {
 
 const baseEditableFields = [
   "company", "part", "topic", "source_type", "publisher", "author", "published_date",
-  "year_exception_reason", "text_extract_status", "chunk_count",
+  "year_exception_reason",
   "download_status", "file_path", "hold_reason", "fail_reason", "notes"
 ];
 
@@ -83,10 +83,8 @@ function defaultReview(candidate) {
     author: candidate.author,
     published_date: candidate.published_date || candidate.document_year,
     year_exception_reason: "",
-    text_extract_status: "미확인",
     download_status: "미다운로드",
     file_path: "",
-    chunk_count: "",
   };
 }
 
@@ -400,10 +398,8 @@ function rowsForExport() {
       not_duplicate_verified: r.not_duplicate_verified,
       duplicate_status: r.not_duplicate_verified ? "고유" : "미확인",
       year_exception_reason: r.year_exception_reason,
-      text_extract_status: r.text_extract_status,
       download_status: r.download_status,
       file_path: r.file_path,
-      chunk_count: r.chunk_count,
       hold_reason: r.hold_reason,
       fail_reason: r.fail_reason,
       notes: r.notes,
@@ -436,8 +432,6 @@ function documentsRows() {
       source_domain: c.source_domain,
       file_path: r.file_path,
       download_status: r.download_status,
-      text_extract_status: r.text_extract_status,
-      chunk_count: r.chunk_count,
       reviewer: r.reviewer,
       reviewed_at: r.reviewed_at,
       final_status: "통과",

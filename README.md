@@ -331,8 +331,6 @@ review_state_이영희_202-301.json
 |`not_duplicate_verified`|중복 아님 확인 여부|
 |`duplicate_status`|중복 상태|
 |`year_exception_reason`|2016년 이전 자료 포함 사유|
-|`text_extract_status`|텍스트 추출 상태|
-|`chunk_count`|청킹 후 청크 수 기록용|
 |`hold_reason`|보류 사유|
 |`fail_reason`|탈락 사유|
 |`notes`|검증 메모|
@@ -377,8 +375,6 @@ review_state_이영희_202-301.json
 |`duplicate_key`|중복 확인용 키|중복 제거에 사용|
 |`source_domain`|출처 도메인|다운로드 방식 분기 가능|
 |`file_path`|나중에 다운로드한 원문 파일 경로|청킹 시 사용|
-|`text_extract_status`|텍스트 추출 가능 여부|청킹 준비상태 확인|
-|`chunk_count`|청킹 후 생성된 청크 수|청킹 후 업데이트|
 |`reviewer`|검증자|이력 관리|
 |`reviewed_at`|검증 시각|이력 관리|
 |`final_status`|최종 상태. 기본적으로 통과|이력 관리|
@@ -453,6 +449,15 @@ language
 text
 char_count
 ```
+
+청킹 때 포함할 내용은 아래로 제한합니다.
+
+- 본문 텍스트
+- 텍스트로 옮길 수 있는 수식
+- 이미지 자체가 아니라 이미지·그림·도표의 캡션
+- 표는 마크다운 표 형식으로 변환
+
+이미지 파일 자체는 청크에 넣지 않습니다. 참고문헌 목록, 반복 머리말·꼬리말, 쪽 번호, 목차, 반복 저작권 고지, 광고성 문구는 제거합니다.
 
 ## 문서유형별 청킹 주의사항
 
