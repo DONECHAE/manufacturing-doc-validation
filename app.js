@@ -98,6 +98,18 @@ function reviewFor(candidate) {
   return state.reviews[candidate.candidate_id];
 }
 
+function extensionFromUrl(url) {
+  const path = new URL(url, window.location.href).pathname.toLowerCase();
+  const match = path.match(/\.(pdf|hwp|hwpx|docx|doc|xlsx|xls|html|htm|txt)$/);
+  return match ? `.${match[1]}` : ".html";
+}
+
+function suggestedFilePath(candidate, review) {
+  const company = review.company || candidate.company || "COMMON";
+  const docId = review.final_doc_id || makeDocId(company, Number(candidate.source_row || 1) - 1);
+  return `downloads/${company}/${docId}${extensionFromUrl(candidate.url || "")}`;
+}
+
 function setCurrent(candidateId) {
   state.currentId = candidateId;
   saveState();
@@ -207,6 +219,7 @@ function renderDocument() {
   $("title").textContent = candidate.title;
   $("openUrl").href = candidate.url;
   $("downloadUrl").href = candidate.url;
+  $("downloadUrl").setAttribute("download", suggestedFilePath(candidate, review).split("/").pop());
   $("reason").textContent = candidate.reason || "";
   $("previewFrame").src = candidate.url;
 
@@ -225,6 +238,7 @@ function renderDocument() {
   const strip = $("statusStrip");
   strip.className = `status-strip ${statusClass(review.review_status)}`;
   strip.textContent = `${statusLabel(review.review_status)}${review.reviewer ? " · " + review.reviewer : ""}${review.reviewed_at ? " · " + new Date(review.reviewed_at).toLocaleString() : ""}`;
+  $("suggestedPath").textContent = `권장 저장 경로: ${suggestedFilePath(candidate, review)}`;
   renderTypeGuidance(review, candidate);
   syncReviewToForm(candidate, review);
 
@@ -303,6 +317,30 @@ function saveCurrent() {
   const candidate = currentCandidate();
   const review = reviewFor(candidate);
   syncFormToReview(review);
+  review.reviewer = state.reviewer || review.reviewer;
+  review.reviewed_at = new Date().toISOString();
+  saveState();
+  render();
+}
+
+async function copySuggestedPath() {
+  const candidate = currentCandidate();
+  const review = reviewFor(candidate);
+  const path = suggestedFilePath(candidate, review);
+  try {
+    await navigator.clipboard.writeText(path);
+    $("suggestedPath").textContent = `복사됨: ${path}`;
+  } catch {
+    $("suggestedPath").textContent = `복사 실패. 직접 입력하세요: ${path}`;
+  }
+}
+
+function markDownloaded() {
+  const candidate = currentCandidate();
+  const review = reviewFor(candidate);
+  syncFormToReview(review);
+  review.download_status = "다운로드완료";
+  if (!review.file_path) review.file_path = suggestedFilePath(candidate, review);
   review.reviewer = state.reviewer || review.reviewer;
   review.reviewed_at = new Date().toISOString();
   saveState();
@@ -442,6 +480,8 @@ function bindEvents() {
   $("holdBtn").addEventListener("click", () => mark("hold"));
   $("failBtn").addEventListener("click", () => mark("fail"));
   $("saveBtn").addEventListener("click", saveCurrent);
+  $("markDownloadedBtn").addEventListener("click", markDownloaded);
+  $("copyPathBtn").addEventListener("click", copySuggestedPath);
   $("reloadPreviewBtn").addEventListener("click", () => { $("previewFrame").src = currentCandidate().url; });
   $("statusFilter").addEventListener("change", renderList);
   $("searchInput").addEventListener("input", renderList);

@@ -180,6 +180,13 @@
             <label>원문 파일 경로
               <input data-field="file_path" type="text" placeholder="예: downloads/PHA/PHA-0012.pdf">
             </label>
+            <div class="download-helper">
+              <p id="suggestedPath" class="hint"></p>
+              <div class="button-row">
+                <button id="markDownloadedBtn" type="button" class="secondary">다운로드 완료로 표시</button>
+                <button id="copyPathBtn" type="button" class="secondary">저장 경로 복사</button>
+              </div>
+            </div>
             <label>예상 청크 수
               <input data-field="chunk_count" type="number" min="0" placeholder="나중에 자동/수동 입력">
             </label>
