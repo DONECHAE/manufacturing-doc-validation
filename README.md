@@ -73,17 +73,26 @@ cd review-checklist
 
 1. `원문 열기` 또는 `원문 다운로드`를 누릅니다.
 2. 브라우저에서 파일을 저장합니다.
-3. 가능하면 화면의 `권장 저장 경로`와 같은 위치·파일명으로 저장합니다.
-4. 저장 후 `다운로드 완료로 표시`를 누릅니다.
-5. 필요하면 `원문 파일 경로`를 실제 저장 위치에 맞게 수정합니다.
+3. 이 폴더 안의 `source_files/` 폴더에 저장합니다.
+4. 파일명은 `작업자이름_회사명_순번` 형식으로 저장합니다.
+5. 저장 후 `다운로드 완료로 표시`를 누릅니다.
+6. 필요하면 `원문 파일 경로`를 실제 저장 위치에 맞게 수정합니다.
 
 저장 경로 예시:
 
 ```text
-downloads/PHA/PHA-0012.pdf
-downloads/상신브레이크/SANGSIN-0007.html
-downloads/SL/SL-0045.pdf
+source_files/홍길동_PHA_0001.pdf
+source_files/김철수_상신브레이크_0101.html
+source_files/이영희_SL_0201.pdf
 ```
+
+파일명 규칙:
+
+```text
+작업자이름_회사명_순번.확장자
+```
+
+예를 들어 홍길동 작업자가 PHA 자료의 첫 번째 후보 원문을 PDF로 저장한다면 `홍길동_PHA_0001.pdf`처럼 저장합니다. 순번은 화면의 권장 저장 경로에 표시되는 번호를 그대로 쓰면 됩니다.
 
 이렇게 기록해두면 `documents.csv`를 저장할 때 `file_path`와 `download_status`가 함께 나갑니다. 나중에 청킹할 때는 URL을 다시 열지 않고 `file_path`의 로컬 원문 파일을 우선 사용할 수 있습니다.
 
@@ -106,19 +115,16 @@ python3 scripts/download_documents.py
 
 |결과|설명|
 |---|---|
-|`downloads/`|원문 파일이 저장되는 폴더|
+|`source_files/`|원문 파일이 저장되는 폴더|
 |`downloaded_documents.csv`|원문 다운로드 결과와 `file_path`가 채워진 문서 목록|
 
 다운로드 폴더 구조 예시:
 
 ```text
-downloads/
-  PHA/
-    PHA-0012.pdf
-  상신브레이크/
-    SANGSIN-0007.html
-  SL/
-    SL-0045.pdf
+source_files/
+  홍길동_PHA_0001.pdf
+  김철수_상신브레이크_0101.html
+  이영희_SL_0201.pdf
 ```
 
 `downloaded_documents.csv`에는 기존 `documents.csv` 컬럼에 아래 값이 추가 또는 갱신됩니다.
@@ -138,7 +144,7 @@ downloads/
 - 일부 사이트는 자동 다운로드를 막을 수 있습니다.
 - 로그인, 유료 접근, 봇 차단, 세션 필요 자료는 `다운로드실패`로 남을 수 있습니다.
 - 실패한 자료는 검증 화면의 `원문 열기` 또는 `원문 다운로드`로 직접 저장한 뒤, `file_path`를 직접 기록하면 됩니다.
-- `downloads/`와 `downloaded_documents.csv`는 작업 결과물이므로 기본적으로 Git에 올리지 않습니다.
+- `source_files/`와 `downloaded_documents.csv`는 작업 결과물이므로 기본적으로 Git에 올리지 않습니다.
 
 ## 작업자 분배 예시
 

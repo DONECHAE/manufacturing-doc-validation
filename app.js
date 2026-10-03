@@ -103,10 +103,20 @@ function extensionFromUrl(url) {
   return match ? `.${match[1]}` : ".html";
 }
 
+function safeFilenamePart(value, fallback) {
+  return String(value || fallback || "unknown")
+    .trim()
+    .replace(/[\\/:*?"<>|]+/g, "_")
+    .replace(/\s+/g, "_")
+    .slice(0, 60) || fallback || "unknown";
+}
+
 function suggestedFilePath(candidate, review) {
   const company = review.company || candidate.company || "COMMON";
-  const docId = makeDocId(company, Number(candidate.source_row || 1) - 1);
-  return `downloads/${company}/${docId}${extensionFromUrl(candidate.url || "")}`;
+  const reviewer = safeFilenamePart(state.reviewer || review.reviewer, "작업자명");
+  const companyPart = safeFilenamePart(company, "회사명");
+  const sequence = String(Math.max(1, Number(candidate.source_row || 2) - 1)).padStart(4, "0");
+  return `source_files/${reviewer}_${companyPart}_${sequence}${extensionFromUrl(candidate.url || "")}`;
 }
 
 function setCurrent(candidateId) {

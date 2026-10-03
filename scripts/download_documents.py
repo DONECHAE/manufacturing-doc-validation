@@ -14,7 +14,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = ROOT / "documents.csv"
 DEFAULT_OUTPUT = ROOT / "downloaded_documents.csv"
-DOWNLOAD_DIR = ROOT / "downloads"
+DOWNLOAD_DIR = ROOT / "source_files"
 
 
 def clean(value: str, fallback: str = "unknown") -> str:
@@ -37,10 +37,13 @@ def extension_from(url: str, content_type: str) -> str:
 
 
 def target_path(row: dict[str, str], url: str, content_type: str) -> Path:
+    reviewer = clean(row.get("reviewer", ""), "자동다운로드")
     company = clean(row.get("company", ""), "COMMON")
-    doc_id = clean(row.get("doc_id", ""), clean(row.get("candidate_id", ""), "document"))
+    doc_id = clean(row.get("doc_id", ""), clean(row.get("candidate_id", ""), "0000"))
+    number_match = re.search(r"(\d{3,})$", doc_id)
+    sequence = number_match.group(1) if number_match else doc_id
     ext = extension_from(url, content_type)
-    return DOWNLOAD_DIR / company / f"{doc_id}{ext}"
+    return DOWNLOAD_DIR / f"{reviewer}_{company}_{sequence}{ext}"
 
 
 def download_one(row: dict[str, str], overwrite: bool) -> dict[str, str]:
