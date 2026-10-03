@@ -10,7 +10,7 @@ const state = {
 };
 
 const baseEditableFields = [
-  "company", "part", "topic", "source_type", "publisher", "author", "published_date",
+  "source_name", "title", "url", "company", "part", "topic", "source_type", "publisher", "author", "published_date",
   "year_exception_reason",
   "download_status", "file_path", "hold_reason", "fail_reason", "notes"
 ];
@@ -75,6 +75,9 @@ function defaultReview(candidate) {
     source_verified: false,
     not_duplicate_verified: false,
     duplicate_status: "미확인",
+    source_name: candidate.source_domain,
+    title: candidate.title,
+    url: candidate.url,
     company: candidate.company,
     part: candidate.part,
     topic: candidate.topic,
@@ -83,7 +86,7 @@ function defaultReview(candidate) {
     author: candidate.author,
     published_date: candidate.published_date || candidate.document_year,
     year_exception_reason: "",
-    download_status: "미다운로드",
+    download_status: "미저장",
     file_path: "",
   };
 }
@@ -114,7 +117,7 @@ function suggestedFilePath(candidate, review) {
   const reviewer = safeFilenamePart(state.reviewer || review.reviewer, "작업자명");
   const companyPart = safeFilenamePart(company, "회사명");
   const sequence = String(Math.max(1, Number(candidate.source_row || 2) - 1)).padStart(4, "0");
-  return `source_files/${reviewer}_${companyPart}_${sequence}${extensionFromUrl(candidate.url || "")}`;
+  return `source_files/${reviewer}_${companyPart}_${sequence}${extensionFromUrl(review.url || candidate.url || "")}`;
 }
 
 function setCurrent(candidateId) {
@@ -221,24 +224,27 @@ function renderDocument() {
   const candidate = currentCandidate();
   if (!candidate) return;
   const review = reviewFor(candidate);
+  const currentTitle = review.title || candidate.title;
+  const currentUrl = review.url || candidate.url;
 
   $("candidateMeta").textContent = `${candidate.source_row}행 · ${candidate.candidate_id} · ${candidate.source_domain}`;
-  $("title").textContent = candidate.title;
-  $("openUrl").href = candidate.url;
-  $("downloadUrl").href = candidate.url;
-  $("downloadUrl").setAttribute("download", suggestedFilePath(candidate, review).split("/").pop());
+  $("title").textContent = currentTitle;
+  $("openUrl").href = currentUrl;
   $("reason").textContent = candidate.reason || "";
-  $("previewFrame").src = candidate.url;
+  $("previewFrame").src = currentUrl;
 
   const meta = [
-    ["부품군", candidate.company],
-    ["부품", candidate.part],
-    ["기술주제", candidate.topic],
-    ["문서유형", candidate.source_type],
-    ["발행일/연도", candidate.published_date || candidate.document_year || "미확인"],
+    ["원문 출처", review.source_name || candidate.source_domain],
+    ["원문 제목", currentTitle],
+    ["원문 URL", currentUrl],
+    ["발행기관", review.publisher || candidate.venue || "미확인"],
+    ["부품군", review.company || candidate.company],
+    ["부품", review.part || candidate.part],
+    ["기술주제", review.topic || candidate.topic],
+    ["문서유형", review.source_type || candidate.source_type],
+    ["발행일/연도", review.published_date || candidate.published_date || candidate.document_year || "미확인"],
     ["접근 힌트", candidate.access_hint],
     ["키워드", candidate.keywords],
-    ["URL", candidate.url],
   ];
   $("metaGrid").innerHTML = meta.map(([k, v]) => `<dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v || "")}</dd>`).join("");
 
@@ -346,7 +352,7 @@ function markDownloaded() {
   const candidate = currentCandidate();
   const review = reviewFor(candidate);
   syncFormToReview(review);
-  review.download_status = "다운로드완료";
+  review.download_status = "저장완료";
   if (!review.file_path) review.file_path = suggestedFilePath(candidate, review);
   review.reviewer = state.reviewer || review.reviewer;
   review.reviewed_at = new Date().toISOString();
@@ -381,12 +387,14 @@ function rowsForExport() {
       part: r.part,
       topic: r.topic,
       source_type: r.source_type,
-      title: c.title,
+      source_name: r.source_name,
+      title: r.title,
       publisher: r.publisher,
       author: r.author,
       published_date: r.published_date,
       document_year: c.document_year,
-      url: c.url,
+      url: r.url,
+      original_url: c.url,
       source_domain: c.source_domain,
       access_status: c.access_hint,
       language: c.language,
@@ -417,11 +425,12 @@ function documentsRows() {
       part: r.part,
       topic: r.topic,
       source_type: r.source_type,
-      title: c.title,
+      source_name: r.source_name,
+      title: r.title,
       publisher: r.publisher,
       author: r.author,
       published_date: r.published_date,
-      url: c.url,
+      url: r.url,
       original_url: c.url,
       access_status: c.access_hint,
       language: "ko",
@@ -484,7 +493,11 @@ function bindEvents() {
   $("saveBtn").addEventListener("click", saveCurrent);
   $("markDownloadedBtn").addEventListener("click", markDownloaded);
   $("copyPathBtn").addEventListener("click", copySuggestedPath);
-  $("reloadPreviewBtn").addEventListener("click", () => { $("previewFrame").src = currentCandidate().url; });
+  $("reloadPreviewBtn").addEventListener("click", () => {
+    const candidate = currentCandidate();
+    const review = reviewFor(candidate);
+    $("previewFrame").src = review.url || candidate.url;
+  });
   $("statusFilter").addEventListener("change", renderList);
   $("searchInput").addEventListener("input", renderList);
   $("exportStateBtn").addEventListener("click", () => download("review_state.json", JSON.stringify(state, null, 2), "application/json"));

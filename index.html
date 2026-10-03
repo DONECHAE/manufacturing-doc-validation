@@ -85,7 +85,6 @@
               <h2 id="title"></h2>
             </div>
             <a id="openUrl" class="open-link" target="_blank" rel="noreferrer">원문 열기</a>
-            <a id="downloadUrl" class="open-link" target="_blank" rel="noreferrer" download>원문 다운로드</a>
           </div>
           <dl class="meta-grid" id="metaGrid"></dl>
           <div class="reason-box">
@@ -120,6 +119,18 @@
 
           <fieldset>
             <legend>최종 메타데이터</legend>
+            <label>원문 출처
+              <input data-field="source_name" type="text" placeholder="예: ScienceON, KIPRIS, 공공데이터포털">
+            </label>
+            <label>원문 제목
+              <input data-field="title" type="text">
+            </label>
+            <label>원문 URL
+              <input data-field="url" type="url">
+            </label>
+            <label>발행기관
+              <input data-field="publisher" type="text">
+            </label>
             <label>부품군
               <select data-field="company">
                 <option>PHA</option>
@@ -147,9 +158,6 @@
                 <option>데이터셋</option>
               </select>
             </label>
-            <label>발행기관/저널
-              <input data-field="publisher" type="text">
-            </label>
             <label>저자
               <input data-field="author" type="text">
             </label>
@@ -159,11 +167,11 @@
             <label>연도 예외 사유
               <input data-field="year_exception_reason" type="text" placeholder="2016년 이전 자료일 때만">
             </label>
-            <label>원문 다운로드 상태
+            <label>원문 저장 상태
               <select data-field="download_status">
-                <option>미다운로드</option>
-                <option>다운로드완료</option>
-                <option>다운로드실패</option>
+                <option>미저장</option>
+                <option>저장완료</option>
+                <option>저장실패</option>
                 <option>수동확인</option>
               </select>
             </label>
