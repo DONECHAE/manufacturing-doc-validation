@@ -487,6 +487,12 @@ function bindEvents() {
   $("searchInput").addEventListener("input", renderList);
   $("exportStateBtn").addEventListener("click", () => download("review_state.json", JSON.stringify(state, null, 2), "application/json"));
   $("exportCsvBtn").addEventListener("click", () => download("review_results.csv", toCsv(rowsForExport()), "text/csv;charset=utf-8"));
+  $("resetStateBtn").addEventListener("click", () => {
+    const confirmed = window.confirm("브라우저에 저장된 검증 상태를 모두 초기화할까요? 후보 원본 데이터는 삭제되지 않습니다.");
+    if (!confirmed) return;
+    localStorage.removeItem(STORAGE_KEY);
+    window.location.reload();
+  });
   $("exportDocumentsBtn").addEventListener("click", () => {
     const rows = documentsRows();
     if (!rows.length) {

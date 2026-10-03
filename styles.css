@@ -62,6 +62,7 @@ button:hover { border-color: var(--blue); }
 .pass { background: var(--green); color: #fff; border-color: var(--green); }
 .hold { background: var(--amber); color: #fff; border-color: var(--amber); }
 .fail { background: var(--red); color: #fff; border-color: var(--red); }
+.danger-outline { color: var(--red); border-color: var(--red); background: var(--panel); }
 
 .app-header {
   display: flex;
