@@ -14,6 +14,6 @@
     "candidates.json",
     "candidates.csv",
     "README.md",
-    "scripts/download_documents.py"
+    "source_files/.gitkeep"
   ]
 }

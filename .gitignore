@@ -7,11 +7,9 @@ __pycache__/
 review_state*.json
 review_results*.csv
 documents*.csv
-downloaded_documents*.csv
 
 # Later-stage generated outputs.
 chunks_*.jsonl
-downloads/
 source_files/*
 !source_files/.gitkeep
 exports/

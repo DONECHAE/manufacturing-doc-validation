@@ -10,7 +10,7 @@ const state = {
 };
 
 const baseEditableFields = [
-  "source_name", "title", "url", "company", "part", "topic", "source_type", "publisher", "author", "published_date",
+  "source_name", "title", "url", "source_identifier", "company", "part", "topic", "source_type", "publisher", "author", "published_date",
   "year_exception_reason",
   "download_status", "file_path", "hold_reason", "fail_reason", "notes"
 ];
@@ -78,6 +78,7 @@ function defaultReview(candidate) {
     source_name: candidate.source_domain,
     title: candidate.title,
     url: candidate.url,
+    source_identifier: "",
     company: candidate.company,
     part: candidate.part,
     topic: candidate.topic,
@@ -236,6 +237,7 @@ function renderDocument() {
     ["원문 출처", review.source_name || candidate.source_domain],
     ["원문 제목", currentTitle],
     ["원문 URL", currentUrl],
+    ["문서 식별번호", review.source_identifier || "미기재"],
     ["발행기관", review.publisher || candidate.venue || "미확인"],
     ["부품군", review.company || candidate.company],
     ["부품", review.part || candidate.part],
@@ -388,6 +390,7 @@ function rowsForExport() {
       source_type: r.source_type,
       source_name: r.source_name,
       title: r.title,
+      source_identifier: r.source_identifier,
       publisher: r.publisher,
       author: r.author,
       published_date: r.published_date,
@@ -426,6 +429,7 @@ function documentsRows() {
       source_type: r.source_type,
       source_name: r.source_name,
       title: r.title,
+      source_identifier: r.source_identifier,
       publisher: r.publisher,
       author: r.author,
       published_date: r.published_date,
