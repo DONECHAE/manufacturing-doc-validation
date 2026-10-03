@@ -231,7 +231,6 @@ function renderDocument() {
   $("title").textContent = currentTitle;
   $("openUrl").href = currentUrl;
   $("reason").textContent = candidate.reason || "";
-  $("previewFrame").src = currentUrl;
 
   const meta = [
     ["원문 출처", review.source_name || candidate.source_domain],
@@ -493,11 +492,6 @@ function bindEvents() {
   $("saveBtn").addEventListener("click", saveCurrent);
   $("markDownloadedBtn").addEventListener("click", markDownloaded);
   $("copyPathBtn").addEventListener("click", copySuggestedPath);
-  $("reloadPreviewBtn").addEventListener("click", () => {
-    const candidate = currentCandidate();
-    const review = reviewFor(candidate);
-    $("previewFrame").src = review.url || candidate.url;
-  });
   $("statusFilter").addEventListener("change", renderList);
   $("searchInput").addEventListener("input", renderList);
   $("exportStateBtn").addEventListener("click", () => download("review_state.json", JSON.stringify(state, null, 2), "application/json"));
