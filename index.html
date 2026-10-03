@@ -84,6 +84,7 @@
               <h2 id="title"></h2>
             </div>
             <a id="openUrl" class="open-link" target="_blank" rel="noreferrer">원문 열기</a>
+            <a id="downloadUrl" class="open-link" target="_blank" rel="noreferrer" download>원문 다운로드</a>
           </div>
           <dl class="meta-grid" id="metaGrid"></dl>
           <div class="reason-box">
@@ -167,6 +168,17 @@
                 <option>OCR 필요</option>
                 <option>불가</option>
               </select>
+            </label>
+            <label>원문 다운로드 상태
+              <select data-field="download_status">
+                <option>미다운로드</option>
+                <option>다운로드완료</option>
+                <option>다운로드실패</option>
+                <option>수동확인</option>
+              </select>
+            </label>
+            <label>원문 파일 경로
+              <input data-field="file_path" type="text" placeholder="예: downloads/PHA/PHA-0012.pdf">
             </label>
             <label>예상 청크 수
               <input data-field="chunk_count" type="number" min="0" placeholder="나중에 자동/수동 입력">

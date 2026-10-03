@@ -13,6 +13,7 @@
     "candidates.js",
     "candidates.json",
     "candidates.csv",
-    "README.md"
+    "README.md",
+    "scripts/download_documents.py"
   ]
 }

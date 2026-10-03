@@ -55,6 +55,59 @@ cd review-checklist
 - 작업 결과인 `review_state.json`, `review_results.csv`, `documents.csv`는 각 작업자가 브라우저에서 내려받는 파일입니다.
 - 여러 사람이 동시에 작업할 경우 각자 결과 파일을 저장한 뒤, 마지막에 합치는 절차가 필요합니다.
 
+## 원문 파일 다운로드
+
+검증 화면에서는 각 후보의 `원문 열기`와 `원문 다운로드` 링크를 제공합니다. 다만 브라우저 보안 정책이나 사이트 설정 때문에 모든 원문이 HTML 화면에서 바로 저장되지는 않을 수 있습니다.
+
+최종 통과 자료의 원문을 한 번에 내려받으려면 아래 순서로 진행합니다.
+
+1. 검증 화면에서 통과 자료를 확정합니다.
+2. `documents.csv 저장` 버튼을 눌러 최종 통과 문서 목록을 내려받습니다.
+3. 내려받은 `documents.csv`를 이 폴더의 루트에 둡니다.
+4. 아래 명령을 실행합니다.
+
+```bash
+python3 scripts/download_documents.py
+```
+
+실행 결과:
+
+|결과|설명|
+|---|---|
+|`downloads/`|원문 파일이 저장되는 폴더|
+|`downloaded_documents.csv`|원문 다운로드 결과와 `file_path`가 채워진 문서 목록|
+
+다운로드 폴더 구조 예시:
+
+```text
+downloads/
+  PHA/
+    PHA-0012.pdf
+  상신브레이크/
+    SANGSIN-0007.html
+  SL/
+    SL-0045.pdf
+```
+
+`downloaded_documents.csv`에는 기존 `documents.csv` 컬럼에 아래 값이 추가 또는 갱신됩니다.
+
+|컬럼|설명|
+|---|---|
+|`file_path`|내려받은 원문 파일의 상대 경로|
+|`download_status`|다운로드완료, 이미존재, 다운로드실패|
+|`http_status`|HTTP 응답 코드|
+|`content_type`|응답 콘텐츠 유형|
+|`download_error`|실패 시 오류 내용|
+
+나중에 청킹할 때는 가능하면 `documents.csv` 대신 `downloaded_documents.csv`를 입력으로 쓰면 됩니다. 이 파일에는 `file_path`가 채워져 있어서 청킹 프로그램이 URL을 다시 열지 않고 로컬 원문 파일을 바로 읽을 수 있습니다.
+
+주의할 점:
+
+- 일부 사이트는 자동 다운로드를 막을 수 있습니다.
+- 로그인, 유료 접근, 봇 차단, 세션 필요 자료는 `다운로드실패`로 남을 수 있습니다.
+- 실패한 자료는 검증 화면의 `원문 열기`로 수동 저장한 뒤, `file_path`를 직접 기록하면 됩니다.
+- `downloads/`와 `downloaded_documents.csv`는 작업 결과물이므로 기본적으로 Git에 올리지 않습니다.
+
 ## 작업자 분배 예시
 
 원본 XLSX의 1행은 헤더이므로 실제 후보는 2행부터 시작합니다.
@@ -160,6 +213,7 @@ cd review-checklist
 |`candidates.csv`|후보 300건 원본 데이터의 CSV 버전|엑셀로 후보 목록만 확인하고 싶을 때 사용합니다.|
 |`summary.json`|후보 총수와 부품군별 건수 요약|검증용 참고 파일입니다.|
 |`README.md`|사용 설명서|예. 작업자에게 같이 전달하면 좋습니다.|
+|`scripts/download_documents.py`|`documents.csv` 기준 원문 다운로드 스크립트|최종 통과 문서 원문을 내려받을 때 사용합니다.|
 
 중요한 점은 `index.html`, `styles.css`, `app.js`, `candidates.js`가 같은 폴더에 있어야 한다는 것입니다. `index.html`만 따로 빼서 보내면 화면이 후보 데이터를 읽지 못할 수 있습니다.
 
@@ -311,7 +365,23 @@ chunks_PHA.jsonl / chunks_SANGSIN.jsonl / chunks_SL.jsonl
 
 검증 단계에서 작업자가 직접 관리해야 하는 ID는 `candidate_id`, `source_row`, `doc_id`입니다. `chunk_id`와 `chunk_index`는 아직 입력하지 않습니다. 두 값은 최종 통과 문서를 대상으로 실제 청킹을 수행할 때 `doc_id`를 기준으로 자동 생성합니다.
 
-### 4. 나중에 생성될 청킹 결과 파일
+### 4. downloaded_documents.csv
+
+`scripts/download_documents.py`를 실행하면 생성되는 파일입니다.
+
+이 파일은 `documents.csv`에 원문 다운로드 결과를 붙인 버전입니다. 청킹 단계에서 가장 쓰기 좋은 입력 파일입니다.
+
+포함되는 추가 정보:
+
+- 원문 파일 경로
+- 다운로드 성공 여부
+- HTTP 상태 코드
+- 콘텐츠 유형
+- 실패 사유
+
+청킹 프로그램은 이 파일의 `file_path`를 우선 사용하고, 파일이 없거나 다운로드에 실패한 경우에만 `url`을 다시 확인하면 됩니다.
+
+### 5. 나중에 생성될 청킹 결과 파일
 
 현재 검증 도구가 직접 생성하지는 않지만, 다음 단계에서 최종적으로 만들어야 하는 파일은 아래와 같습니다.
 

@@ -12,7 +12,7 @@ const state = {
 const baseEditableFields = [
   "company", "part", "topic", "source_type", "publisher", "author", "published_date",
   "final_doc_id", "year_exception_reason", "text_extract_status", "chunk_count",
-  "hold_reason", "fail_reason", "notes"
+  "download_status", "file_path", "hold_reason", "fail_reason", "notes"
 ];
 
 const checkboxFields = [
@@ -85,6 +85,8 @@ function defaultReview(candidate) {
     published_date: candidate.published_date || candidate.document_year,
     year_exception_reason: "",
     text_extract_status: "미확인",
+    download_status: "미다운로드",
+    file_path: "",
     chunk_count: "",
   };
 }
@@ -204,6 +206,7 @@ function renderDocument() {
   $("candidateMeta").textContent = `${candidate.source_row}행 · ${candidate.candidate_id} · ${candidate.source_domain}`;
   $("title").textContent = candidate.title;
   $("openUrl").href = candidate.url;
+  $("downloadUrl").href = candidate.url;
   $("reason").textContent = candidate.reason || "";
   $("previewFrame").src = candidate.url;
 
@@ -352,6 +355,8 @@ function rowsForExport() {
       duplicate_status: r.not_duplicate_verified ? "고유" : "미확인",
       year_exception_reason: r.year_exception_reason,
       text_extract_status: r.text_extract_status,
+      download_status: r.download_status,
+      file_path: r.file_path,
       chunk_count: r.chunk_count,
       hold_reason: r.hold_reason,
       fail_reason: r.fail_reason,
@@ -383,7 +388,8 @@ function documentsRows() {
       year_exception_reason: r.year_exception_reason,
       duplicate_key: c.duplicate_key,
       source_domain: c.source_domain,
-      file_path: "",
+      file_path: r.file_path,
+      download_status: r.download_status,
       text_extract_status: r.text_extract_status,
       chunk_count: r.chunk_count,
       reviewer: r.reviewer,

@@ -1,10 +1,13 @@
 .DS_Store
 Thumbs.db
+__pycache__/
+*.pyc
 
 # Worker-specific exports. Keep these outside Git unless intentionally merging results.
 review_state*.json
 review_results*.csv
 documents*.csv
+downloaded_documents*.csv
 
 # Later-stage generated outputs.
 chunks_*.jsonl
