@@ -11,7 +11,7 @@ const state = {
 
 const baseEditableFields = [
   "company", "part", "topic", "source_type", "publisher", "author", "published_date",
-  "final_doc_id", "year_exception_reason", "text_extract_status", "chunk_count",
+  "year_exception_reason", "text_extract_status", "chunk_count",
   "download_status", "file_path", "hold_reason", "fail_reason", "notes"
 ];
 
@@ -75,7 +75,6 @@ function defaultReview(candidate) {
     source_verified: false,
     not_duplicate_verified: false,
     duplicate_status: "미확인",
-    final_doc_id: "",
     company: candidate.company,
     part: candidate.part,
     topic: candidate.topic,
@@ -106,7 +105,7 @@ function extensionFromUrl(url) {
 
 function suggestedFilePath(candidate, review) {
   const company = review.company || candidate.company || "COMMON";
-  const docId = review.final_doc_id || makeDocId(company, Number(candidate.source_row || 1) - 1);
+  const docId = makeDocId(company, Number(candidate.source_row || 1) - 1);
   return `downloads/${company}/${docId}${extensionFromUrl(candidate.url || "")}`;
 }
 
@@ -370,7 +369,6 @@ function rowsForExport() {
       review_status: r.review_status,
       reviewer: r.reviewer,
       reviewed_at: r.reviewed_at,
-      final_doc_id: r.final_doc_id,
       company: r.company,
       part: r.part,
       topic: r.topic,
@@ -408,7 +406,7 @@ function documentsRows() {
     .map((c) => ({ candidate: c, review: reviewFor(c) }))
     .filter(({ review }) => review.review_status === "pass")
     .map(({ candidate: c, review: r }, index) => ({
-      doc_id: r.final_doc_id || makeDocId(r.company, index + 1),
+      doc_id: makeDocId(r.company, index + 1),
       company: r.company,
       part: r.part,
       topic: r.topic,

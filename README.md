@@ -304,7 +304,6 @@ review_state_이영희_202-301.json
 |`review_status`|미검토, 통과, 보류, 탈락|
 |`reviewer`|검증자|
 |`reviewed_at`|검증 시각|
-|`final_doc_id`|최종 문서 ID|
 |`company`|부품군 관리 라벨|
 |`part`|관련 부품|
 |`topic`|기술주제|
@@ -353,7 +352,7 @@ review_state_이영희_202-301.json
 
 |컬럼|설명|청킹 단계 사용 여부|
 |---|---|---|
-|`doc_id`|최종 문서 ID. 청크 ID의 앞부분으로 사용|사용|
+|`doc_id`|최종 통과 자료를 `documents.csv`로 저장할 때 자동 생성되는 문서 ID. 청크 ID의 앞부분으로 사용|사용|
 |`company`|PHA / 상신브레이크 / SL 등 부품군 관리 라벨|사용|
 |`part`|관련 부품명|사용|
 |`topic`|공정, 소재, 불량원인, 검사, 설비, 안전, 표준 등|사용|
@@ -397,7 +396,7 @@ chunks_PHA.jsonl / chunks_SANGSIN.jsonl / chunks_SL.jsonl
 
 즉, 검증 단계가 끝났을 때 최종적으로 가장 중요한 파일은 `documents.csv`입니다. 이 파일만 있으면 어떤 문서를 청킹해야 하는지, 각 청크에 어떤 메타데이터를 붙여야 하는지 확인할 수 있습니다.
 
-검증 단계에서 작업자가 직접 관리해야 하는 ID는 `candidate_id`, `source_row`, `doc_id`입니다. `chunk_id`와 `chunk_index`는 아직 입력하지 않습니다. 두 값은 최종 통과 문서를 대상으로 실제 청킹을 수행할 때 `doc_id`를 기준으로 자동 생성합니다.
+검증 단계에서 작업자가 직접 관리해야 하는 ID는 `candidate_id`와 `source_row`뿐입니다. `doc_id`, `chunk_id`, `chunk_index`는 아직 입력하지 않습니다. `doc_id`는 검수 완료 후 `documents.csv`를 저장할 때 통과 자료를 대상으로 자동 생성합니다. `chunk_id`와 `chunk_index`는 나중에 실제 청킹을 수행할 때 `doc_id`를 기준으로 자동 생성합니다.
 
 ### 4. downloaded_documents.csv
 
